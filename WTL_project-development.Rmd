@@ -1,0 +1,237 @@
+---
+title: "Withlacoochee State Forest Collections"
+author: "C.A. Kiahtipes"
+date: "2026-02-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Using Atlas of Florida Plants Data to Guide Field Collections
+
+Our overall objective is to use the Atlas of Florida Plants (AFP) to generate insights useful for guiding research. In our case, we want to figure out if there are any geographic areas, plant communities, or plants that are under-represented. This underpins some more general objectives, including developing methods for exploring herbarium data (i.e. extracting locations and plant community data) and for establishing a logic for continued specimen collection (i.e. what do additional collecitons add to the data picture?). The case study we will work through is looking at the Withlacoochee State Forest (WSF). This markdown document is dedicated to assessing and processing the data from the AFP, which is prerequisite for the other document focused on mapping specimens.
+
+### Initial Data Pull
+
+My first instinct was to pull info from the AFP using locality data. There's two routes here, searching by "Withlacoochee" and "Withlacoochee State Forest". My approach was to do both and use R to combine the tables into a single table. The basic strategy is to combine the tables by rows (basically extending the first with the second), search for doubles, then replace them with single entries. Data is easier to wrangle if we extract some info and recombine into a new, smaller table. We are also isolating years and months into a more useful format for plotting/reading. Because the "Withlacoochee" search also turned up specimens near the Withlacoochee River, we're going to exclude specimens based on the counties where the WSF actually lies.
+
+```{r Withlacoochee data pull}
+
+WTL_sp <- read.csv("AFP data/WTL_specimens.csv", header = TRUE) #Reading "Withlacoochee" as Location
+WSF_sp = read.csv("AFP data/WSF_specimens.csv", header = TRUE) #Reading "Withlacoochee State Forest as Location"
+
+#We combine the two tables by rows.
+
+comb_sp = rbind(WTL_sp, WSF_sp)
+
+#We quickly check for doubles with table(), then create a list of taxa to cut.
+
+doubles_check = table(comb_sp$barcode)
+
+cut_list = doubles_check[doubles_check > 1]
+
+#For loop searches for the name, identifies and removes both locations, then staples a new single entry at the bottom of the table. Slimy, yet satisfying.
+
+for(i in 1:length(cut_list)){
+  cut = grep(names(cut_list[i]), comb_sp$barcode)
+  #print(paste0("Cutting duplicate specimen ", names(cut_list[i])))
+  comb_sp = comb_sp[-c(cut[1], cut[2]),]
+  pull = WTL_sp[WTL_sp$barcode == as.numeric(names(cut_list[i])),]
+  #print(paste0("Replacing with single instance of ",WTL_sp$genus[WTL_sp$barcode == as.numeric(names(cut_list[i]))], " ", WTL_sp$species[WTL_sp$barcode == as.numeric(names(cut_list[i]))]))
+  comb_sp = rbind(comb_sp, pull)
+}
+
+#Extract taxonomic data and combine into specific epithets.
+
+WTL_taxa = data.frame(comb_sp$family, comb_sp$genus, comb_sp$species)
+
+genus = WTL_taxa$comb_sp.genus
+specs = WTL_taxa$comb_sp.species
+epithet = vector("character", length(genus))
+
+for(i in 1:length(epithet)){
+  epithet[i] = paste0(genus[i]," ",specs[i])
+}
+
+#Extract dates and make into sensible format ###This generally needs work, I think.
+
+WTL_dates = comb_sp$Collection.Date
+
+coll_dates = as.Date(comb_sp$Collection.Date, format = "%m/%d/%Y")
+coll_yr = as.Date(coll_dates, format = "%Y")
+
+year = format(coll_dates, '%Y')
+month = format(coll_dates, '%m')
+
+#Then we combine these into a new data table.
+
+WTL_data = data.frame(WTL_taxa, epithet, coll_dates, year, month, WTL_sp$LatDecL, WTL_sp$LongDecL, WTL_sp$county, row.names = WTL_sp$barcode)
+
+#I like family names to be capitalized, sue me.
+
+family_classes = read.csv("AFP data/Families_index.csv", header = TRUE) #This list has families capitalized, need all caps.
+
+# Source - https://stackoverflow.com/a/16516747
+# Posted by juba
+# Retrieved 2026-02-08, License - CC BY-SA 3.0
+
+#data.frame(lapply(df, function(v) {
+#  if (is.character(v)) return(toupper(v))
+#  else return(v)
+#}))
+
+WTL_FAMILY = data.frame(sapply(WTL_data$comb_sp.family, function(x){
+  if(is.character(x)) return(toupper(x))
+  else return(x)
+}))
+
+#Rename column.
+
+WTL_data[,1] = WTL_FAMILY
+
+#colnames(WTL_data[,1]) = "comb_sp.family" #Replace with old name.
+
+#Pull Order and Class from AFP then bind to data table.
+
+Order = vector("character", nrow(WTL_data))
+Class = vector("character", nrow(WTL_data))
+
+for(i in 1:length(Order)){
+  grab = WTL_data$comb_sp.family[i]
+  Order[i] = family_classes$Order[family_classes$Name == grab]
+  Class[i] = family_classes$Group.Name[family_classes$Name == grab]
+}
+
+WTL_data = cbind(WTL_data, Order, Class)
+
+#Last, we winnow the data by counties.
+
+WTL_data = WTL_data[WTL_data$WTL_sp.county == "Pasco Co." |
+                      WTL_data$WTL_sp.county == "Hernando Co." |
+                      WTL_data$WTL_sp.county == "Sumter Co." |
+                      WTL_data$WTL_sp.county == "Citrus Co.", ]
+
+
+```
+
+## Basic Insights
+
+### Collections by Family.
+
+We can look at the distributions of collections by family. ALthough it is much too crowded.
+
+```{r Overview of Data, echo=FALSE, fig.height = 10, fig.width= 6}
+
+#Assigning colors by group isn't working as expected, yet other uses of classes/orders has gone fine.
+
+WTL_orders = unique(WTL_data$Order)
+WTL_groups = unique(WTL_data$Class)
+
+groupColors = vector("character", nrow(WTL_data))
+groupPalette = c("darkgreen", "gold", "lightblue", "orange")
+
+orderColors = vector("character", nrow(WTL_data))
+
+for(i in 1:length(WTL_groups)){
+  groupColors[WTL_data$Class == WTL_groups[i]] = groupPalette[i]
+}
+
+#Let's start with collections by family.
+
+#familyColors = colorRampPalette(c("darkgreen","gold"))
+familyColors = colorRampPalette(c("red", "orange", "yellow", "green", "blue", "purple", "violet"))
+
+family_count = table(WTL_data$comb_sp.family)
+barplot(family_count[order(family_count)], 
+        horiz = TRUE, 
+        las = 1, 
+        cex.axis = 0.5, 
+        cex = 0.5, 
+        width = 25, 
+        main = "N Specimens by Family from Withlacoochee State Forest", 
+        col = familyColors(length(family_count)))
+
+```
+
+### Singletons
+
+We can look at single collections, which should mostly be rare things. Need to double-check that symbology is plotting as expected.
+
+```{r singletons, echo = FALSE, fig.height= 10, fig.width = 6}
+
+#Okay what I see here is that we've got some REALLY abundant stuff and a lot of not-so-abundant stuff, typical of biodviersity, no?
+#Let's look into what's only been collected once and things collected twice.
+
+species_count = table(WTL_data$epithet)
+singletons = species_count[species_count == 1]
+
+single_names = names(singletons)
+
+WTL_singletons = as.data.frame(matrix(nrow = length(single_names), ncol = ncol(WTL_data)))
+WTL_srownames = vector("numeric", nrow(WTL_singletons))
+
+
+for(i in 1:length(single_names)){
+  WTL_singletons[i, ] = WTL_data[WTL_data$epithet == single_names[i], ]
+  WTL_srownames[i] = row.names(WTL_data[WTL_data$epithet == single_names[i], ])
+}
+
+colnames(WTL_singletons) = colnames(WTL_data)
+row.names(WTL_singletons) = WTL_srownames
+
+#Create pch differences based on counties.
+
+county_list = unique(WTL_data$WTL_sp.county)
+county_symb = vector("numeric", nrow(WTL_singletons))
+
+for(i in 1:length(county_list)){
+  county_symb[WTL_singletons$WTL_sp.county == county_list[i]] = i+20
+}
+
+set_order = order(WTL_singletons$WTL_sp.county)
+
+WTL_singletons = WTL_singletons[set_order,]
+
+par(mar = c(5, 8, 4, 2) + 0.1)
+
+plot(WTL_singletons$year, 
+     1:length(WTL_singletons$year), 
+     axes = FALSE, ann = FALSE, 
+     xlim = c(1950,2030),
+     pch = county_symb[set_order],
+     bg = groupColors[set_order],
+     cex = 0.75)
+
+axis(1, at = seq(1950,2030,10))
+axis(2, at = c(1:nrow(WTL_singletons)), labels = WTL_singletons$epithet, cex.axis = 0.5, las = 1, tick = FALSE)
+title(main = "Single Collections from Withlacoochee State Forest")
+
+par(mar = c(5, 4, 4, 2) + 0.1)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
