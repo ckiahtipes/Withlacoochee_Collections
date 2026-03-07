@@ -137,7 +137,9 @@ barplot(family_count[order(family_count)],
         cex = 0.5, 
         width = 25, 
         main = "N Specimens by Family from Withlacoochee State Forest", 
-        col = groupColors)
+        col = groupColors[order(family_count)])
+
+
 
 #Okay what I see here is that we've got some REALLY abundant stuff and a lot of not-so-abundant stuff, typical of biodviersity, no?
 #Let's look into what's only been collected once and things collected twice.
@@ -174,7 +176,7 @@ WTL_singletons = WTL_singletons[set_order,]
 
 par(mar = c(5, 8, 4, 2) + 0.1)
 
-plot(WTL_singletons$year, 
+plot(WTL_singletons$year[set_order], 
      1:length(WTL_singletons$year), 
      axes = FALSE, ann = FALSE, 
      xlim = c(1950,2030),
@@ -187,6 +189,30 @@ axis(2, at = c(1:nrow(WTL_singletons)), labels = WTL_singletons$epithet, cex.axi
 title(main = "Single Collections from Withlacoochee State Forest")
 
 par(mar = c(5, 4, 4, 2) + 0.1)
+
+#Buildout for modifying the previous plot. Let's try separating by major groups.
+
+par(mar = c(5, 8, 4, 2) + 0.1, mfrow = c(4,1))
+
+for(i in 1:length(WTL_orders)){
+  group_pull = WTL_singletons[WTL_singletons$Order == WTL_orders[i],]
+  if(nrow(group_pull) == 0){
+  } else {
+    plot(group_pull$year,
+         1:length(group_pull$year),
+         xlim = c(1950,2030),
+         axes = FALSE, ann = FALSE,
+         pch = 22, 
+         bg = "darkgreen")
+    
+    axis(1, at = seq(1950,2030,10))
+    axis(2, at = c(1:nrow(group_pull)), labels = group_pull$epithet, cex.axis = 0.5, las = 1, tick = FALSE)
+    
+  }
+  
+}
+
+par(mar = c(5, 4, 4, 2) + 0.1, mfrow = c(1,1))
 
 #Let's subset it by counties and plot it.
 

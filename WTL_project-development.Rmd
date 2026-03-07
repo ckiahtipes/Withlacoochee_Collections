@@ -159,19 +159,23 @@ barplot(family_count[order(family_count)],
 
 We can look at single collections, which should mostly be rare things. Need to double-check that symbology is plotting as expected.
 
-```{r singletons, echo = FALSE, fig.height= 10, fig.width = 6}
+```{r singletons, echo = FALSE, fig.height= 8, fig.width = 12}
 
-#Okay what I see here is that we've got some REALLY abundant stuff and a lot of not-so-abundant stuff, typical of biodviersity, no?
-#Let's look into what's only been collected once and things collected twice.
+#Let's see what has only been collected once vs. other collections.
+
+#First we manufacture a list a singletons.
 
 species_count = table(WTL_data$epithet)
 singletons = species_count[species_count == 1]
 
 single_names = names(singletons)
 
+#Build a data frame to put this data into.
+
 WTL_singletons = as.data.frame(matrix(nrow = length(single_names), ncol = ncol(WTL_data)))
 WTL_srownames = vector("numeric", nrow(WTL_singletons))
 
+#Use names to fill from main table.
 
 for(i in 1:length(single_names)){
   WTL_singletons[i, ] = WTL_data[WTL_data$epithet == single_names[i], ]
@@ -181,7 +185,7 @@ for(i in 1:length(single_names)){
 colnames(WTL_singletons) = colnames(WTL_data)
 row.names(WTL_singletons) = WTL_srownames
 
-#Create pch differences based on counties.
+#Create pch differences based on counties. REVIEW.
 
 county_list = unique(WTL_data$WTL_sp.county)
 county_symb = vector("numeric", nrow(WTL_singletons))
@@ -190,29 +194,79 @@ for(i in 1:length(county_list)){
   county_symb[WTL_singletons$WTL_sp.county == county_list[i]] = i+20
 }
 
-set_order = order(WTL_singletons$WTL_sp.county)
+#set_order = order(WTL_singletons$WTL_sp.county)
+#
+#WTL_singletons = WTL_singletons[set_order,]
 
-WTL_singletons = WTL_singletons[set_order,]
+par(mfrow = c(2,1))
 
-par(mar = c(5, 8, 4, 2) + 0.1)
+hist(as.numeric(WTL_singletons$year), breaks = 25, col = "gold", main = "N Singletons Collected by Year")
+hist(as.numeric(WTL_data$year), breaks = 40, col = "darkgreen", main = "N Collections by Year")
 
-plot(WTL_singletons$year, 
-     1:length(WTL_singletons$year), 
-     axes = FALSE, ann = FALSE, 
-     xlim = c(1950,2030),
-     pch = county_symb[set_order],
-     bg = groupColors[set_order],
-     cex = 0.75)
 
-axis(1, at = seq(1950,2030,10))
-axis(2, at = c(1:nrow(WTL_singletons)), labels = WTL_singletons$epithet, cex.axis = 0.5, las = 1, tick = FALSE)
-title(main = "Single Collections from Withlacoochee State Forest")
+par(mfrow = c(1,1))
+```
 
-par(mar = c(5, 4, 4, 2) + 0.1)
 
+Frequency of singleton encounters follows the collecting effort.
+
+```{r county-level breakdown for WTL specimens, echo = FALSE}
+
+par(mfrow = c(1,1))
+
+for(i in 1:length(county_list)){
+  par(mar = c(5, 8, 4, 2) + 0.1)
+  
+  sngbycnty = WTL_singletons[WTL_singletons$WTL_sp.county == county_list[i],]
+  grp_col = groupColors[WTL_singletons$WTL_sp.county == county_list[i]]
+  
+  plot(sngbycnty$year, 
+       1:length(sngbycnty$year), 
+       axes = FALSE, ann = FALSE, 
+       xlim = c(1950,2030),
+       pch = 21,
+       bg = grp_col,
+       cex = 0.75)
+  
+  axis(1, at = seq(1950,2030,10))
+  axis(2, at = c(1:nrow(sngbycnty)), labels = sngbycnty$epithet, cex.axis = 0.5, las = 1, tick = FALSE)
+  title(main = paste0("Single Collections from Withlacoochee State Forest: ", county_list[i]))
+}
+
+par(mfrow = c(1,1))
 
 ```
 
+Results by county shows what?
+
+```{r singleton by county barplots, echo = FALSE}
+
+cnty_single = table(WTL_singletons$WTL_sp.county)
+cnty_totals = table(WTL_data$WTL_sp.county)
+
+cnty_cmb = rbind(cnty_single, cnty_totals)
+
+barplot(cnty_cmb, horiz = TRUE, las = 1, beside = TRUE, main = "Total N Collected vs. Singletons at WTL")
+
+#You bet your ass they do. Okay, let's break it out by class.
+
+#Let's lose Lake Co., which isn't adding much and makes the next steps harder.
+
+WTL_data = WTL_data[WTL_data$WTL_sp.county != "Lake Co.",]
+
+WTL_classes = unique(WTL_data$Class)
+
+WTL_biclass = sapply(WTL_classes, function(x){
+  table(WTL_data$WTL_sp.county[WTL_data$Class == x])
+})
+
+WTL_biclass = as.data.frame(WTL_biclass)
+
+barplot(t(WTL_biclass), beside = TRUE, horiz = TRUE, las = 1, main = "N Collected by Class WTL", col = c("gold","darkorange","darkgreen","purple"))
+legend(250, 5, WTL_classes, pt.bg = c("gold","darkorange","darkgreen","purple"), pch = c(rep(22, length(WTL_classes))))
+
+
+```
 
 
 
