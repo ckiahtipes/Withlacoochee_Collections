@@ -185,6 +185,11 @@ for(i in 1:length(single_names)){
 colnames(WTL_singletons) = colnames(WTL_data)
 row.names(WTL_singletons) = WTL_srownames
 
+WTL_singletons = WTL_singletons[WTL_singletons$WTL_sp.county == "Pasco Co." |
+                      WTL_singletons$WTL_sp.county == "Hernando Co." |
+                      WTL_singletons$WTL_sp.county == "Sumter Co." |
+                      WTL_singletons$WTL_sp.county == "Citrus Co.", ]
+
 #Create pch differences based on counties. REVIEW.
 
 county_list = unique(WTL_data$WTL_sp.county)
@@ -268,6 +273,16 @@ legend(250, 5, WTL_classes, pt.bg = c("gold","darkorange","darkgreen","purple"),
 
 ```
 
+###Rarefaction to Evaluate Sample Coverage
+
+```{r rarefaction WTL, echo = false}
+
+
+
+
+
+
+```
 
 
 

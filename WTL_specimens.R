@@ -74,8 +74,7 @@ WTL_data = data.frame(WTL_taxa, epithet, coll_dates, year, month, WTL_sp$LatDecL
 WTL_data = WTL_data[WTL_data$WTL_sp.county == "Pasco Co." |
                       WTL_data$WTL_sp.county == "Hernando Co." |
                       WTL_data$WTL_sp.county == "Sumter Co." |
-                      WTL_data$WTL_sp.county == "Citrus Co." |
-                      WTL_data$WTL_sp.county == "Lake Co.", ]
+                      WTL_data$WTL_sp.county == "Citrus Co.", ]
 
 #Okay now we have new cleaner dataframe with better tracking of names, families, dates, and locations.
 
@@ -123,6 +122,8 @@ orderColors = vector("character", nrow(WTL_data))
 for(i in 1:length(WTL_groups)){
   groupColors[WTL_data$Class == WTL_groups[i]] = groupPalette[i]
 }
+
+#Edit out counties we don't need
 
 #Let's start with collections by family.
 
@@ -250,10 +251,6 @@ barplot(cnty_cmb, horiz = TRUE, las = 1, beside = TRUE, main = "Total N Collecte
 
 #You bet your ass they do. Okay, let's break it out by class.
 
-#Let's lose Lake Co., which isn't adding much and makes the next steps harder.
-
-WTL_data = WTL_data[WTL_data$WTL_sp.county != "Lake Co.",]
-
 WTL_classes = unique(WTL_data$Class)
 
 WTL_biclass = sapply(WTL_classes, function(x){
@@ -266,6 +263,102 @@ barplot(t(WTL_biclass), beside = TRUE, horiz = TRUE, las = 1, main = "N Collecte
 legend(250, 5, WTL_classes, pt.bg = c("gold","darkorange","darkgreen","purple"), pch = c(rep(22, length(WTL_classes))))
 
 #The more species there are, the more are collected. Similar shapes in the barplots point to a shared underlying pattern.
+
+#Enumerating known diversity by date...
+
+#Cleanup
+
+WTL_wdates = WTL_data[is.na(WTL_data$coll_dates) == FALSE,]
+
+WTL_wdates = WTL_wdates[order(WTL_wdates$coll_dates),]
+
+date_track = vector("numeric", length = nrow(WTL_wdates))
+
+date_lwd = c(1, 1, 1, 1)
+
+for(i in 1:length(date_track)){
+  
+  date_track[i] = length(unique(WTL_wdates$epithet[1:i]))
+  
+}
+
+plot(WTL_wdates$year, date_track, type = "l", lwd = 2, xlab = "Year", ylab = "N Species", main = "Withlacoochee USF Herbarium Specimens")
+
+for(i in 1:length(county_list)){
+  
+  pull_length = length(WTL_wdates$year[WTL_wdates$WTL_sp.county == county_list[i]])
+  cnty_pull = vector("numeric", pull_length)
+  
+  for(j in 1:pull_length){
+    
+    cnty_pull[j] = length(unique(WTL_wdates$epithet[1:j]))
+    
+  }
+  
+  lines(WTL_wdates$year[WTL_wdates$WTL_sp.county == county_list[i]], cnty_pull, lty = i, lwd = date_lwd[i])
+  
+}
+
+legend(1960, 650, c("All", county_list), lty = c(1, 1, 2, 3, 4), lwd = c(2, 1, 1, 1, 1))
+
+#Let's try some basic rarefaction
+
+sample_size = nrow(WTL_data)
+
+#rare_track = vector("numeric", sample_size)
+rare_track = matrix(nrow = sample_size, ncol = length(county_list)+1)
+
+plot(0,0, xlim = c(0, 500), ylim = c(0, 300))
+
+for(j in 1:length(county_list)){
+  
+  for(i in 1:sample_size){
+    
+    if(j == 1){
+
+      pull = sample(WTL_data$epithet, i, replace = TRUE)
+      rare_track[i,j] = as.numeric(length(unique(pull)))
+      
+    } else {
+      
+      pull = sample(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[j -1]], i, replace = TRUE)
+      rare_track[i,j] = as.numeric(length(unique(pull)))
+      
+    }
+    
+  }
+  
+  if(j == 1){
+   
+    points(rare_track[,j], pch = 21, bg = j)
+     
+  }else{
+    known_points = c(rep(j, length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[j - 1]]))), 
+                     rep(NA, sample_size - length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[j - 1]]))))
+
+    points(rare_track[,j], pch = 21, bg = known_points, col = c(rep(1, length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[j - 1]]))), 
+                                                                rep(NA, sample_size - length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[j - 1]])))))
+  }
+  
+}
+
+#Okay let's think about these as proportions of known diversity
+
+pr_known = rare_track[,2:ncol(rare_track)]/max(rare_track[,1])
+
+plot(0,0, xlim = c(0, 400), ylim = c(0, 0.6))
+
+for(i in 1:length(county_list)){
+  
+  known_points = c(rep(i+1, length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[i]]))), 
+                   rep(NA, sample_size - length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[i]]))))
+  
+  points(pr_known[,i], pch = 21, bg = known_points, col = c(rep(1, length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[i]]))), 
+                                                                                rep(NA, sample_size - length(unique(WTL_data$epithet[WTL_data$WTL_sp.county == county_list[i]])))))
+  
+}
+
+legend(0, 0.575, county_list[1:4], pch = 21, pt.bg = c(2,3,4,5))
 
 #Think the message here is that you need to compare WTL with county-level data and we need to build this from the ground up in a new document/project.
 
