@@ -1,0 +1,183 @@
+TYPE,AREA,CLASS,COLOR
+Improved Pasture,2331945941,agriculture,darkorange
+Rural Open,457232000.1,agriculture,darkorange
+Specialty Farms,307927409.2,agriculture,darkorange
+Unimproved/Woodland Pasture,226624920.1,agriculture,darkorange
+Field Crops,151836301.6,agriculture,darkorange
+Irrigated Row Crops,123107656.9,agriculture,darkorange
+Orchards/Groves,118622598.7,agriculture,darkorange
+Rural Structures,115406942.7,agriculture,darkorange
+Citrus,78367038.16,agriculture,darkorange
+Row Crops,44794715.58,agriculture,darkorange
+Ornamentals,36994186.89,agriculture,darkorange
+Wet Confierous Plantations,36585826.47,agriculture,darkorange
+Vineyard and Nurseries,30758432.98,agriculture,darkorange
+Grazed Wetlands,17453869.54,agriculture,darkorange
+Tree Nurseries,12734754.31,agriculture,darkorange
+Mowed Grass,11262365.09,agriculture,darkorange
+Fallow Cropland,9088330.011,agriculture,darkorange
+Feeding Operations,7025310.363,agriculture,darkorange
+Fallow Orchards,6422761.114,agriculture,darkorange
+Sod Farms,4222582.232,agriculture,darkorange
+Vegetative Berm,1687787.596,agriculture,darkorange
+Other Agriculture,404101.1925,agriculture,darkorange
+Exotic Plants,325481.6324,agriculture,darkorange
+Ditch/Artificial Intermittent Stream,236010.9681,agriculture,darkorange
+Other Open Lands - Rural,214748.4563,agriculture,darkorange
+Hardwood Plantations,98382.41113,agriculture,darkorange
+Fruit Orchards,14541.22857,agriculture,darkorange
+Pecan,8666.984184,agriculture,darkorange
+Sand Beach (Dry),1699310.93,beach,tan
+Sand,5030.604164,beach,tan
+Coastal Uplands,113594.6186,coastal,turquoise
+Coastal Hydric Hammock,3455.788236,coastal,turquoise
+Coastal Berm,2520.248973,coastal,turquoise
+Transportation,1961585324,developed,red
+"Residential, Low Density",1368104476,developed,red
+Medium Density Residential,808716846.3,developed,red
+High Density Residential ,492052266.9,developed,red
+Commercial and Services,252744001.5,developed,red
+High Intensity Urban,224100363.3,developed,red
+Urban Open Land,180594646.9,developed,red
+Golf courses,136220575.1,developed,red
+Industrial,100138478.5,developed,red
+Utilities,84362607.27,developed,red
+Extractive,79491470.81,developed,red
+Cultural - Lacustrine,44302341.23,developed,red
+Institutional,37650438.1,developed,red
+Urban Open Forested,34786180.23,developed,red
+Low Intensity Urban,30464179.05,developed,red
+Cultural - Palustrine,27769847.16,developed,red
+Bare Soil/Clear Cut,21495616.96,developed,red
+Cultural - Riverine,12915987.71,developed,red
+Community rec. facilities,10139086.38,developed,red
+Rock Quarries,9140928.917,developed,red
+Sand and Gravel Pits,8997578.591,developed,red
+Estuarine Ditch/Channel,7455446.489,developed,red
+Spoil Area,6184553.847,developed,red
+Parks and Zoos,6080878.651,developed,red
+Urban Open Pine,5707487.169,developed,red
+Solar Farms,4636379.124,developed,red
+Cemeteries,3547186.129,developed,red
+Cultural - Terrestrial,2690653.543,developed,red
+Communication,2604080.835,developed,red
+Ballfields,1855668.348,developed,red
+Highway Rights of Way,1251229.469,developed,red
+Unconsolidated Substrate,959125.0786,developed,red
+Strip Mines,800091.7319,developed,red
+Non-vegetated,642391.9234,developed,red
+Rails,95582.34124,developed,red
+Abandoned Mining Lands,78866.91609,developed,red
+Roads,54461.06908,developed,red
+Beach Dune,2350464.573,dunes,tan
+Coastal Strand,377349.4854,dunes,tan
+Salt Marsh,265629475.7,estuarine wetlands,lightblue
+Estuarine,254509877.5,estuarine wetlands,lightblue
+Tidal Flat,3327873.754,estuarine wetlands,lightblue
+Salt Flat,511649.4899,estuarine wetlands,lightblue
+Freshwater Tidal Marsh,36621.67844,estuarine wetlands,lightblue
+Subtidal,9162.974632,estuarine wetlands,lightblue
+Mixed Hardwood-Coniferous,838983977.7,forested,darkgreen
+Mesic Flatwoods,811064430.2,forested,darkgreen
+Mixed Hardwood-Coniferous Swamps,520011158.9,forested,darkgreen
+Hydric Hammock,361964107.6,forested,darkgreen
+Successional Hardwood Forest,174586771.6,forested,darkgreen
+Mesic Hammock,167870364.9,forested,darkgreen
+Wet Flatwoods,126717329.5,forested,darkgreen
+Upland Hardwood Forest,109148046.9,forested,darkgreen
+Hydric Pine Flatwoods,85036126.65,forested,darkgreen
+Rural Open Forested,84945414.97,forested,darkgreen
+Xeric Hammock,66405327.63,forested,darkgreen
+Upland Coniferous,36068207.53,forested,darkgreen
+Bottomland Forest,15487484.38,forested,darkgreen
+Alluvial Forest,6529144.113,forested,darkgreen
+Maritime Hammock,5147016.473,forested,darkgreen
+Cabbage Palm Hammock,3371543.594,forested,darkgreen
+Oak - Cabbage Palm Forests,1291524.903,forested,darkgreen
+Live Oak,1097440.597,forested,darkgreen
+Cabbage Palm Flatwoods,570942.039,forested,darkgreen
+Cypress/Pine/Cabbage Palm,302485.7538,forested,darkgreen
+Mixed Hardwoods,266169.2278,forested,darkgreen
+Pine - Mesic Oak,216949.0908,forested,darkgreen
+Prairie Mesic Hammock,101441.6452,forested,darkgreen
+Dry Upland Hardwood Forest,32038.79796,forested,darkgreen
+Basin Swamp,338141751.1,forested wetlands,darkseagreen4
+Cypress,315315938.9,forested wetlands,darkseagreen4
+Floodplain Swamp,256626557.4,forested wetlands,darkseagreen4
+Mixed Scrub-Shrub Wetland,196774121.2,forested wetlands,darkseagreen4
+Isolated Freshwater Swamp,174773158.2,forested wetlands,darkseagreen4
+Dome Swamp,95552689.76,forested wetlands,darkseagreen4
+Baygall,55390671,forested wetlands,darkseagreen4
+Cypress/Tupelo (including mixed Cypress/Tupelo),47712239.75,forested wetlands,darkseagreen4
+Bay Swamp,32770847.96,forested wetlands,darkseagreen4
+Other Coniferous Wetlands,28980347.84,forested wetlands,darkseagreen4
+Shrub Bog,14864277.17,forested wetlands,darkseagreen4
+Other Hardwood Wetlands,5518181.105,forested wetlands,darkseagreen4
+Cypress/Hardwood Swamps,681991.8021,forested wetlands,darkseagreen4
+Titi Swamp,376611.8038,forested wetlands,darkseagreen4
+Pond Pine,112083.2918,forested wetlands,darkseagreen4
+South Florida Bayhead,53653.32843,forested wetlands,darkseagreen4
+Coniferous Plantations,1284526347,agriculture,darkorange
+Grass,16154456.15,grassland,yellow
+Hydric Pine Savanna,17405.3629,grassland,yellow
+Wet Prairie,160303667.9,herbaceous wetlands,darkseagreen1
+Basin Marsh,106306661.8,herbaceous wetlands,darkseagreen1
+Isolated Freshwater Marsh,65398557.26,herbaceous wetlands,darkseagreen1
+Depression Marsh,53856314.35,herbaceous wetlands,darkseagreen1
+Floodplain Marsh,40976265.72,herbaceous wetlands,darkseagreen1
+Freshwater Non-Forested Wetlands,12177668.38,herbaceous wetlands,darkseagreen1
+Seepage Slope,44788.1944,herbaceous wetlands,darkseagreen1
+Sawgrass,38099.89514,herbaceous wetlands,darkseagreen1
+Impounded Marsh,16895.87603,herbaceous wetlands,darkseagreen1
+Brazilian Pepper,92025.05675,invasives,pink
+Melaleuca,21853.66724,invasives,pink
+Australian Pine,1990.991845,invasives,pink
+Mangrove Swamp,19228577.62,mangroves,aquamarine
+Shrub and Brushland,117845458.3,open shrubland,palegoldenrod
+Other Shrubs and Brush,450.3677266,open shrubland,palegoldenrod
+Marine,30581073113,open water,blue
+Lacustrine,853251991.5,open water,blue
+Natural Lakes and Ponds,250226516,open water,blue
+Artificial Impoundment/Reservoir,142436916.5,open water,blue
+Floating/Emergent Aquatic Vegetation,133963196.2,open water,blue
+Stormwater Treatment Areas,27255251.53,open water,blue
+Quarry Pond,15651375.01,open water,blue
+Flatwoods/Prairie/Marsh Lake,14019877.65,open water,blue
+Sewage Treatment Pond,5978390.54,open water,blue
+Industrial Cooling Pond,4369126.002,open water,blue
+Artificial/Farm Pond,3999726.754,open water,blue
+River Floodplain Lake/Swamp Lake,3976340.274,open water,blue
+Non-vegetated Wetland,3884292.39,open water,blue
+Canal,2379560.213,open water,blue
+Cultural - Estuarine,1800656.31,open water,blue
+Gum Pond,1538141.686,open water,blue
+Aquacultural Ponds,1522290.185,open water,blue
+Sandhill Lake,1511344.87,open water,blue
+Tidally-influenced Stream,209416.4068,open water,blue
+Clastic Upland Lake,154533.6266,open water,blue
+Sinkhole,140105.4277,open water,blue
+Sinkhole Lake,115738.1235,open water,blue
+Major Springs,32214.04259,open water,blue
+Slough,25542.98279,open water,blue
+Duck Weed,6029.994696,open water,blue
+Oyster Bar,2594161.872,oyster reef,white
+Palmetto Prairie,2335015.442,prairie,yellow
+Reclaimed Lands,14987104.03,reclaimed,purple
+Riverine,48291630.63,riverine,blue
+Natural Rivers and Streams,45303243.15,riverine,blue
+Blackwater Stream,5341957.403,riverine,blue
+Spring-run Stream,2577342.691,riverine,blue
+Seepage Stream,16317.89743,riverine,blue
+Scrub,87649019.26,scrub,goldenrod
+Coastal Scrub,7351867.221,scrub,goldenrod
+Oak Scrub,1877638.184,scrub,goldenrod
+Shell Mound,16459.71222,shell mound,gray
+Mixed Wetland Hardwoods,684644774.7,forested wetlands,darkseagreen4
+Marshes,527093311.8,herbaceous wetlands,darkseagreen1
+Sandhill,1043712576,woodlands,light green
+Sand Pine Scrub,816924313.9,woodlands,light green
+Scrubby Flatwoods,55037799.31,woodlands,light green
+Rural Open Pine,16042961.1,woodlands,light green
+Upland Mixed Woodland,3849609.561,woodlands,light green
+Upland Pine,2517199.938,woodlands,light green
+Cabbage Palm,1217592.195,woodlands,light green
