@@ -10,6 +10,7 @@ library(spData)
 library(sf) #Using this
 library(png)
 library(oce) #Using this
+library(rgdal)
 data("us_states")
 
 #Set some logical variables
@@ -74,18 +75,20 @@ extentLND_sf <- st_set_crs(st_as_sf(as(extentLND, "SpatialPolygons")), "EPSG:308
 extentUTM_sf <- st_set_crs(st_as_sf(as(extentUTM, "SpatialPolygons")), "EPSG:3087")
 
 #For some reason we're making another extent here...different EPSG too...
-extentLL_sf <- st_set_crs(st_as_sf(as(raster::extent(-83.00, -81.5, 28, 29.5), "SpatialPolygons")), "EPSG:4269") #NAD 83
-
+#We're doing this because it's a little easier to experiement with it this way - need to make some extents for relevant projects...
+extentLL_sf <- st_set_crs(st_as_sf(as(raster::extent(-82.65003, -81.91927, 28.41894, 29.00968), "SpatialPolygons")), "EPSG:4269") #NAD 83
+extentOK_co <- st_set_crs(st_as_sf(as(raster::extent(-81.5, -80.5, 27, 28), "SpatialPolygons")), "EPSG:4269") #NAD 83
 #Pulling conservation lands from FNAI
 
 cons_lands = st_read("maps/flma_202512/FloridaConservationLands.gdb") #conservation lands is a geodatabase
 WithlacoocheeSF = cons_lands[2889,] #This is Withlacoochee State Forest
-KissPrairPresSF = cons_lands[1060,] #This is Kissimmee Praire Preserve State Park
+KissPrairPresSF = cons_lands[1217,] #This is Kissimmee Praire Preserve State Park
 
 plot(WithlacoocheeSF$Shape) #This just plots the area.
 
 #Here we transform the original object to a different coordinate system.
 WithlacoocheeSFt = st_transform(WithlacoocheeSF, "EPSG:4269")
+KissimmeePresSFt = st_transform(KissPrairPresSF, "EPSG:4269")
 
 #Read landcover from FWC, file is huge and will need to be trimmed. UPDATE: Colleen may have saved the day
 
@@ -95,6 +98,7 @@ state_landcover = st_read("maps/Polygon/CLC_v4_Poly.gdb") #Another geodatabase, 
 sf_use_s2(FALSE) #This setting lets us put straight lines on a curved reality. It's complicated.
 stld_LatLon = st_transform(state_landcover, "EPSG:4269") #Turning state landcover classes into NAD83 UTM
 LL_crop = st_intersection(stld_LatLon, extentLL_sf) #One way to make giant files smaller is to crop them.
+OK_crop = st_intersection(stld_LatLon, extentOK_co) #Okeechobee co. extent.
 
 
 #hydric_flatwoods = state_landcover[state_landcover$NAME_SITE == "Hydric Pine Flatwoods",]
@@ -163,9 +167,10 @@ plot(st_union(LL_crop[LL_crop$NAME_SITE == type_table$TYPE[1] |
                       LL_crop$NAME_SITE == type_table$TYPE[2] |
                       LL_crop$NAME_SITE == type_table$TYPE[3] ,]), col = "darkorange")
 
-impacted = st_combine(LL_crop[LL_crop$NAME_SITE == type_table$TYPE[1] |
-                              LL_crop$NAME_SITE == type_table$TYPE[2] |
-                              LL_crop$NAME_SITE == type_table$TYPE[3] ,])
+hyd_hmk = st_combine(OK_crop[OK_crop$NAME_STATE == "Hydric Hammock",])
+frsh_wt = st_combine(OK_crop[OK_crop$NAME_STATE == "Isolated Freshwater Marsh" |
+                             OK_crop$NAME_STATE == "Freshwater Non-Forested Wetlands",])
+
 
 ###Empty function is empty.
 #impacted = sapply(type_table$TYPE[type_table$CLASS == type_table$CLASS[1]], function(x){
@@ -175,28 +180,68 @@ impacted = st_combine(LL_crop[LL_crop$NAME_SITE == type_table$TYPE[1] |
 #Plotting
 
 #plot(0,0, xlim = c(-83.0, -82.0), ylim = c(28.0,29.0), pch = NA) #Big View
-plot(0,0, xlim = c(-82.6, -82.4), ylim = c(28.6,28.8), pch = NA) #Close View
+plot(0,0, xlim = c(-81.3000, -80.9000), ylim = c(27.45,27.7), pch = NA) #Kissimmee Prairie Preserve View
 
 plot(counties_LatLon$geometry, add = TRUE, lty = 2, col = NA)
 
+#plot(WithlacoocheeSFt$Shape, add = TRUE, col = "lightblue")
+
 for(i in 1:nrow(type_table)){
-  plot(LL_crop$Shape[LL_crop$NAME_SITE == type_table$TYPE[i]], add = TRUE, col = type_table$COLOR[i], lwd = 0.5)
+  plot(OK_crop$Shape[OK_crop$NAME_STATE == type_table$TYPE[i]], add = TRUE, col = type_table$COLOR[i], lwd = 0.5)
   print(paste0(i, " of ", nrow(type_table), " types plotted"))
 }
 
-plot(WithlacoocheeSFt$Shape, add = TRUE, col = "lightblue")
+#points(WTL_points$as.numeric.WTL_sploc.LongDecL., WTL_points$as.numeric.WTL_sploc.LatDecL., pch = 21, bg = "gold")
 
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Mixed Hardwood-Coniferous"], add = TRUE, col = "darkgreen", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Sand Pine Scrub"], add = TRUE, col = "lightgreen", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Coniferous Plantations"], add = TRUE, col = "darkorange", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Sandhill"], add = TRUE, col = "gold", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Residential, Low Density"], add = TRUE, col = "red", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Marine"], add = TRUE, col = "turquoise", lwd = 0.5)
-#plot(LL_crop$Shape[LL_crop$NAME_SITE == "Lacustrine"], add = TRUE, col = "darkblue", lwd = 0.5)
+#Let's turn this around and make a plot for Okechobee Co. 
 
-points(WTL_points$as.numeric.WTL_sploc.LongDecL., WTL_points$as.numeric.WTL_sploc.LatDecL., pch = 21, bg = "gold")
+###Need better choices for what I'm plotting.
 
-#plot(FL_counties, xlim = c())
-#plot(WithlacoocheeSFt$Shape)
-#points(WTL_points$as.numeric.WTL_sploc.LongDecL., WTL_points$as.numeric.WTL_sploc.LatDecL., pch = 21, bg = "lightblue")
-#plot(counties_LatLon, add = TRUE, lty = 2, col = NA)
+type_names = c("Impacted", #1
+               "Herbaceous Wetland", #2
+               "Forested Wetland", #3
+               "Hammocks", #4
+               "Grasslands", #5
+               "Open Water", #6
+               "Flatwoods", #7
+               "Mixed Forests", #8
+               "Riparian", #9
+               "Scrub", #10
+               "Sandhill", #11
+               "Undiff. Shrubland", #12
+               "Barrens", #13
+               "Coastal Strand", #14
+               "Estuaries" #15
+                )
+
+type_colors = c("darkorange",
+                "lightblue",
+                "darkgreen",
+                "forestgreen",
+                "gold",
+                "blue",
+                "goldenrod",
+                "lightgreen",
+                "darkgreen",
+                "orange",
+                "goldenrod2",
+                "yellow",
+                "white",
+                "darkblue",
+                "darkblue")
+
+state_clkey = c(0,  0,  1,  2,  3,  4,  0,  0,  0,  0,
+                0,  0,  3,  3,  3,  5,  0,  0,  6,  2,
+                2,  7,  0,  3,  6,  7,  8,  2,  6,  0,
+                0,  3,  5,  3,  9,  0,  10, 11, 10, 7,
+                12, 0,  8,  0,  4,  3,  0,  3,  13, 3,
+                0,  0,  4, 10,  2,  7,  6,  0,  14, 0,
+                15, 15, 4,  2,  0,  3,  0,  6,  0)
+
+plot(0,0, xlim = c(-81.25, -80.90), ylim = c(27.45,27.7), pch = NA) #Kissimmee Prairie Preserve View
+plot(counties_LatLon$geometry, add = TRUE, lty = 2, col = NA)
+plot(KissimmeePresSFt$Shape, add = TRUE, col = "pink")
+
+for(i in 1:length(type_colors)){
+  plot(st_combine(OK_crop$Shape[state_clkey == i-1,]), add = TRUE, col = type_colors[i])
+}
