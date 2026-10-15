@@ -10,7 +10,6 @@ library(spData)
 library(sf) #Using this
 library(png)
 library(oce) #Using this
-library(rgdal)
 data("us_states")
 
 #Set some logical variables
@@ -214,6 +213,23 @@ type_names = c("Impacted", #1
                "Estuaries" #15
                 )
 
+KS_plotkey = c(FALSE,
+               TRUE,
+               TRUE,
+               TRUE,
+               TRUE,
+               FALSE,
+               TRUE,
+               TRUE,
+               TRUE,
+               TRUE,
+               TRUE,
+               FALSE,
+               TRUE,
+               TRUE,
+               TRUE)
+
+
 type_colors = c("darkorange",
                 "lightblue",
                 "darkgreen",
@@ -238,10 +254,30 @@ state_clkey = c(0,  0,  1,  2,  3,  4,  0,  0,  0,  0,
                 0,  0,  4, 10,  2,  7,  6,  0,  14, 0,
                 15, 15, 4,  2,  0,  3,  0,  6,  0)
 
+
+#Adding DEM
+
+#ksSRTM <- elevation_3s(-81, 27, "mapping/") #Hashed this out because file exists, but this will download it.
+
+ksTILE1 <- raster::raster("maps/n27_w082_1arc_v3.tif")
+ksTILE2 <- raster::raster("maps/n27_w081_1arc_v3.tif")
+ksSRTM = raster::mosaic(ksTILE1, ksTILE2, fun = mean)
+
 plot(0,0, xlim = c(-81.25, -80.90), ylim = c(27.45,27.7), pch = NA) #Kissimmee Prairie Preserve View
+
+#plot(ksSRTM, add = TRUE, alpha = 0.8, col = gray.colors(121))
 plot(counties_LatLon$geometry, add = TRUE, lty = 2, col = NA)
 plot(KissimmeePresSFt$Shape, add = TRUE, col = "pink")
 
+
+
 for(i in 1:length(type_colors)){
-  plot(st_combine(OK_crop$Shape[state_clkey == i-1,]), add = TRUE, col = type_colors[i])
+  if(KS_plotkey[i] == TRUE){
+    plot(st_combine(OK_crop$Shape[state_clkey == i-1,]), add = TRUE, col = type_colors[i])
+  }
 }
+
+plot(ksSRTM, add = TRUE, alpha = 0.8, col = gray.colors(50))
+
+
+
